@@ -1,4 +1,4 @@
-import './VideoPair.css';
+
 
 const handleVote = (preferredVideoId) => {
   const voteData = {
