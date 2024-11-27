@@ -1,4 +1,5 @@
-import "./VideoPair.css";
+import './VideoPair.css';
+
 const handleVote = (preferredVideoId) => {
   const voteData = {
     user_email: localStorage.getItem("email"), // User's email
