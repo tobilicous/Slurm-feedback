@@ -1,0 +1,18 @@
+[
+    {
+        "user_id": 1,
+        "video1_id": 1,
+        "video2_id": 2,
+        "video1_rating": 4,
+        "video2_rating": 5,
+        "preferred_video_id": 2
+    },
+    {
+        "user_id": 2,
+        "video1_id": 1,
+        "video2_id": 2,
+        "video1_rating": 3,
+        "video2_rating": 2,
+        "preferred_video_id": 1
+    }
+]
