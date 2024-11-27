@@ -1,9 +1,9 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Signup from "/Users/tobiadesanya/Slurm-feedback/src/components/Signup.js";
-import VideoPair from "/Users/tobiadesanya/Slurm-feedback/src/components/VideoPair.js";
-import Admin from "/Users/tobiadesanya/Slurm-feedback/src/components/Admin.js";
-import AdminUpload from "/Users/tobiadesanya/Slurm-feedback/src/components/AdminUpload.js";
+import Signup from "./components/Signup.js";
+import VideoPair from "./components/VideoPair.js";
+import Admin from "./components/Admin.js";
+import AdminUpload from "./components/AdminUpload.js";
 
 function App() {
   return (
