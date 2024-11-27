@@ -24,3 +24,5 @@ const handleVote = (preferredVideoId) => {
     })
     .catch((error) => console.error("Error:", error));
 };
+
+export default VideoPair;
