@@ -67,15 +67,8 @@ def vote():
     data = request.json
     votes = load_json(VOTES_FILE)
 
-    # Record the vote
-    new_vote = {
-        "user_email": data["user_email"],
-        "pair_id": data["pair_id"],  # Unique ID for the video pair
-        "video1_id": data["video1_id"],
-        "video2_id": data["video2_id"],
-        "preferred_video_id": data["preferred_video_id"],  # The user's choice
-    }
-    votes.append(new_vote)
+    # Add new vote data
+    votes.append(data)
     save_json(VOTES_FILE, votes)
 
     return jsonify({"message": "Vote recorded successfully!"})
