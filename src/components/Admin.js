@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "./Admins.css";
+import '../styles/Admin.css';
 
 const Admin = () => {
   const [report, setReport] = useState([]);
