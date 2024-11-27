@@ -42,7 +42,7 @@ const Signup = () => {
 
   return (
     <div className="signup-container">
-      <h1>Welcome to the Video Experiment</h1>
+      <h1>Welcome to the SLURM LAB Acceptable Contact Trajectories Form </h1>
       <p>Please enter your details to get started:</p>
       <input
         type="text"

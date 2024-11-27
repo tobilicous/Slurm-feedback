@@ -6,7 +6,6 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)  # Allow all cross-origin requests
 
-
 # File paths
 DATA_DIR = "data"
 USERS_FILE = os.path.join(DATA_DIR, "users.json")
@@ -37,6 +36,8 @@ def home():
     </ul>
     <p>This is the default route for the API.</p>
     """
+
+# User signup
 @app.route("/signup", methods=["POST"])
 def signup():
     data = request.json
@@ -55,6 +56,7 @@ def signup():
     save_json(USERS_FILE, users)
 
     return jsonify({"message": "User registered successfully!"})
+
 # Load videos
 @app.route("/videos", methods=["GET"])
 def get_videos():
@@ -105,4 +107,5 @@ def admin_report():
     })
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))  # Use PORT environment variable
+    app.run(host="0.0.0.0", port=port)  # Ensure app listens on 0.0.0.0
