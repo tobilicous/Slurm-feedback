@@ -40,13 +40,13 @@ def home():
     """
 
 # User signup
-@app.route("/signup", methods=["POST"])
+@app.route("/signup", methods=["GET", "POST"])
 def signup():
-    try:
-        data = request.get_json()
-        if not data:
-            return jsonify({"error": "Request must be JSON"}), 400
+    if request.method == "GET":
+        return "This endpoint only accepts POST requests to register users.", 200
 
+    if request.method == "POST":
+        data = request.json
         print("Received signup data:", data)
 
         users = load_json(USERS_FILE)
@@ -58,9 +58,6 @@ def signup():
         save_json(USERS_FILE, users)
 
         return jsonify({"message": "User registered successfully!"}), 201
-    except Exception as e:
-        print("Error during signup:", e)
-        return jsonify({"error": "Internal server error"}), 500
 
 @app.route("/health", methods=["GET"])
 def health_check():
