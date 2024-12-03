@@ -40,13 +40,13 @@ def home():
     """
 
 # User signup
-@app.route("/signup", methods=["GET", "POST"])
+@app.route("/signup", methods=["POST"])
 def signup():
-    if request.method == "GET":
-        return jsonify({"message": "This endpoint only accepts POST requests to register users."}), 405
-
-    if request.method == "POST":
+    try:
         data = request.json
+        if not data or "name" not in data or "email" not in data:
+            return jsonify({"error": "Missing 'name' or 'email' field"}), 400
+
         print("Received signup data:", data)
 
         # Load existing users
@@ -60,6 +60,9 @@ def signup():
         save_json(USERS_FILE, users)
 
         return jsonify({"message": "User registered successfully!"}), 201
+    except Exception as e:
+        print("Error during signup:", e)
+        return jsonify({"error": "Internal server error"}), 500
 
 @app.route("/health", methods=["GET"])
 def health_check():
@@ -70,8 +73,8 @@ def health_check():
 def admin_upload():
     try:
         data = request.get_json()
-        if not data:
-            return jsonify({"error": "Request must be JSON"}), 400
+        if not data or "title" not in data or "url" not in data:
+            return jsonify({"error": "Missing 'title' or 'url' field"}), 400
 
         print("Received video upload data:", data)
 
@@ -104,8 +107,8 @@ def get_videos():
 def vote():
     try:
         data = request.get_json()
-        if not data:
-            return jsonify({"error": "Request must be JSON"}), 400
+        if not data or "video1_id" not in data or "video2_id" not in data or "preferred_video_id" not in data:
+            return jsonify({"error": "Missing required vote fields"}), 400
 
         print("Received vote data:", data)
 
