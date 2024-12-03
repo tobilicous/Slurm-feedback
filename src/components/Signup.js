@@ -7,19 +7,33 @@ const Signup = () => {
   const navigate = useNavigate();
 
   const handleSignup = () => {
+    if (!formData.name.trim() || !formData.email.trim()) {
+      alert("Please fill in all fields.");
+      return;
+    }
+
     fetch("http://127.0.0.1:5000/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formData),
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("Failed to register user.");
+        }
+        return res.json();
+      })
       .then((data) => {
         if (data.message === "User registered successfully!") {
-          alert("Signup successful!");
+          alert("Signup successful! Redirecting...");
           navigate("/vote");
         } else {
           alert(data.message);
         }
+      })
+      .catch((error) => {
+        console.error("Error during signup:", error);
+        alert("An error occurred. Please try again.");
       });
   };
 

@@ -43,16 +43,18 @@ def home():
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
     if request.method == "GET":
-        return "This endpoint only accepts POST requests to register users.", 200
+        return jsonify({"message": "This endpoint only accepts POST requests to register users."}), 405
 
     if request.method == "POST":
         data = request.json
         print("Received signup data:", data)
 
+        # Load existing users
         users = load_json(USERS_FILE)
         if any(user["email"] == data["email"] for user in users):
             return jsonify({"message": "User already exists"}), 400
 
+        # Register new user
         new_user = {"name": data["name"], "email": data["email"], "votes": []}
         users.append(new_user)
         save_json(USERS_FILE, users)
