@@ -6,50 +6,65 @@ const AdminUpload = () => {
   const [message, setMessage] = useState("");
 
   const handleUpload = () => {
-    if (formData.title.trim() && formData.url.trim()) {
-      fetch("http://127.0.0.1:5000/admin/upload", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.message === "Video uploaded successfully!") {
-            setMessage("Video uploaded successfully!");
-            setFormData({ title: "", url: "" });
-          } else {
-            setMessage(data.message || "Failed to upload video.");
-          }
-        })
-        .catch((error) => {
-          console.error("Error uploading video:", error);
-          setMessage("An error occurred. Please try again.");
-        });
-    } else {
-      setMessage("Please fill in both fields.");
+    // Validate fields before sending the request
+    if (!formData.title.trim() || !formData.url.trim()) {
+      setMessage("Both fields are required.");
+      return;
     }
+
+    fetch("/admin/upload", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("Failed to upload video.");
+        }
+        return res.json();
+      })
+      .then((data) => {
+        if (data.message === "Video uploaded successfully!") {
+          setMessage("Video uploaded successfully!");
+          setFormData({ title: "", url: "" }); // Reset form fields
+        } else {
+          setMessage(data.message || "Failed to upload video.");
+        }
+      })
+      .catch((error) => {
+        console.error("Error uploading video:", error);
+        setMessage("An error occurred. Please try again.");
+      });
   };
 
   return (
     <div className="admin-upload-container">
       <h1>Admin: Upload Videos</h1>
-      <input
-        type="text"
-        placeholder="Video Title"
-        value={formData.title}
-        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-        className="admin-upload-input"
-      />
-      <input
-        type="text"
-        placeholder="Video URL"
-        value={formData.url}
-        onChange={(e) => setFormData({ ...formData, url: e.target.value })}
-        className="admin-upload-input"
-      />
-      <button onClick={handleUpload} className="admin-upload-button">
-        Upload Video
-      </button>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleUpload();
+        }}
+        className="admin-upload-form"
+      >
+        <input
+          type="text"
+          placeholder="Video Title"
+          value={formData.title}
+          onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+          className="admin-upload-input"
+        />
+        <input
+          type="text"
+          placeholder="Video URL"
+          value={formData.url}
+          onChange={(e) => setFormData({ ...formData, url: e.target.value })}
+          className="admin-upload-input"
+        />
+        <button type="submit" className="admin-upload-button">
+          Upload Video
+        </button>
+      </form>
       {message && <p className="admin-upload-message">{message}</p>}
     </div>
   );

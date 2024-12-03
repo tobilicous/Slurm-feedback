@@ -72,7 +72,7 @@ def health_check():
 @app.route("/admin/upload", methods=["POST"])
 def admin_upload():
     try:
-        data = request.get_json()
+        data = request.json
         if not data or "title" not in data or "url" not in data:
             return jsonify({"error": "Missing 'title' or 'url' field"}), 400
 
