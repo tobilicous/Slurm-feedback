@@ -53,6 +53,9 @@ def signup():
     save_json(USERS_FILE, users)
 
     return jsonify({"message": "User registered successfully!"})
+@app.route("/health", methods=["GET"])
+def health_check():
+    return "OK", 200
 
 # Admin upload a video
 @app.route("/admin/upload", methods=["POST"])
