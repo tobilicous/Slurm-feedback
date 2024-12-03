@@ -1,22 +1,18 @@
 .video-pair-container {
   text-align: center;
-  margin-top: 20px;
+  margin: 50px auto;
 }
 
 .video-container {
   display: flex;
-  justify-content: center;
-  gap: 20px;
-}
-
-.video-wrapper {
-  text-align: center;
+  justify-content: space-around;
+  margin-top: 20px;
 }
 
 .video-button {
   margin-top: 10px;
-  padding: 10px 20px;
-  background-color: #007bff;
+  padding: 10px 15px;
+  background-color: #28a745;
   color: white;
   border: none;
   border-radius: 5px;
@@ -24,16 +20,10 @@
 }
 
 .video-button:hover {
-  background-color: #0056b3;
+  background-color: #218838;
 }
 
-.rating-input {
-  margin-top: 10px;
-  padding: 5px;
-  width: 60%;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  text-align: center;
+.video-pair-message {
+  margin-top: 20px;
+  color: red;
 }
-
-  

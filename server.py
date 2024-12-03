@@ -4,17 +4,13 @@ import os
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app)  # Allow all cross-origin requests
+CORS(app)
 
 # File paths
 DATA_DIR = "data"
 USERS_FILE = os.path.join(DATA_DIR, "users.json")
 VIDEOS_FILE = os.path.join(DATA_DIR, "videos.json")
 VOTES_FILE = os.path.join(DATA_DIR, "votes.json")
-
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))  # Use PORT environment variable
-    app.run(host="0.0.0.0", port=port)  # Ensure app listens on 0.0.0.0
 
 # Helper functions to load and save JSON
 def load_json(file_path):
@@ -34,34 +30,48 @@ def home():
     <h1>Welcome to the Voting System API</h1>
     <p>Available endpoints:</p>
     <ul>
-        <li><strong>GET /videos</strong> - Retrieve all video data</li>
-        <li><strong>POST /vote</strong> - Submit a vote for a video pair</li>
-        <li><strong>GET /admin/report</strong> - Retrieve voting report (Admin only)</li>
+        <li><strong>POST /signup</strong> - Register a new user</li>
+        <li><strong>GET /videos</strong> - Retrieve all videos</li>
+        <li><strong>POST /vote</strong> - Submit a vote</li>
+        <li><strong>GET /admin/report</strong> - Retrieve aggregated voting report</li>
+        <li><strong>POST /admin/upload</strong> - Upload a new video (Admin)</li>
     </ul>
-    <p>This is the default route for the API.</p>
     """
 
 # User signup
 @app.route("/signup", methods=["POST"])
 def signup():
     data = request.json
-    print("Received data:", data)  # Debug log
+    print("Received signup data:", data)
 
-    # Load existing users
     users = load_json(USERS_FILE)
-
-    # Check if user already exists
     if any(user["email"] == data["email"] for user in users):
         return jsonify({"message": "User already exists"}), 400
 
-    # Add the new user
     new_user = {"name": data["name"], "email": data["email"], "votes": []}
     users.append(new_user)
     save_json(USERS_FILE, users)
 
     return jsonify({"message": "User registered successfully!"})
 
-# Load videos
+# Admin upload a video
+@app.route("/admin/upload", methods=["POST"])
+def admin_upload():
+    data = request.json
+    print("Received video upload data:", data)
+
+    videos = load_json(VIDEOS_FILE)
+    new_video = {
+        "id": len(videos) + 1,
+        "title": data["title"],
+        "url": data["url"]
+    }
+    videos.append(new_video)
+    save_json(VIDEOS_FILE, videos)
+
+    return jsonify({"message": "Video uploaded successfully!"})
+
+# Get all videos
 @app.route("/videos", methods=["GET"])
 def get_videos():
     videos = load_json(VIDEOS_FILE)
@@ -71,21 +81,20 @@ def get_videos():
 @app.route("/vote", methods=["POST"])
 def vote():
     data = request.json
-    votes = load_json(VOTES_FILE)
+    print("Received vote data:", data)
 
-    # Add new vote data
+    votes = load_json(VOTES_FILE)
     votes.append(data)
     save_json(VOTES_FILE, votes)
 
     return jsonify({"message": "Vote recorded successfully!"})
 
-# Admin report
+# Admin report for voting results
 @app.route("/admin/report", methods=["GET"])
 def admin_report():
     votes = load_json(VOTES_FILE)
     video_preferences = {}
 
-    # Aggregate results for each pair
     for vote in votes:
         pair_key = f"{vote['video1_id']}-{vote['video2_id']}"
         if pair_key not in video_preferences:
@@ -97,7 +106,6 @@ def admin_report():
                 "total_votes": 0,
             }
 
-        # Count the votes
         if vote["preferred_video_id"] == vote["video1_id"]:
             video_preferences[pair_key]["video1_votes"] += 1
         elif vote["preferred_video_id"] == vote["video2_id"]:
@@ -105,8 +113,10 @@ def admin_report():
 
         video_preferences[pair_key]["total_votes"] += 1
 
-    return jsonify({
-        "votes": votes,  # Individual votes
-        "aggregated": video_preferences  # Aggregated results by pair
-    })
+    return jsonify({"aggregated": video_preferences})
 
+# Run the app
+if __name__ == "__main__":
+    os.makedirs(DATA_DIR, exist_ok=True)  # Ensure data directory exists
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
