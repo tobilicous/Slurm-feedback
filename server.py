@@ -20,6 +20,7 @@ def load_json(file_path):
     return []
 
 def save_json(file_path, data):
+    os.makedirs(os.path.dirname(file_path), exist_ok=True)  # Ensure directory exists
     with open(file_path, "w") as f:
         json.dump(data, f, indent=4)
 
@@ -41,18 +42,26 @@ def home():
 # User signup
 @app.route("/signup", methods=["POST"])
 def signup():
-    data = request.json
-    print("Received signup data:", data)
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "Request must be JSON"}), 400
 
-    users = load_json(USERS_FILE)
-    if any(user["email"] == data["email"] for user in users):
-        return jsonify({"message": "User already exists"}), 400
+        print("Received signup data:", data)
 
-    new_user = {"name": data["name"], "email": data["email"], "votes": []}
-    users.append(new_user)
-    save_json(USERS_FILE, users)
+        users = load_json(USERS_FILE)
+        if any(user["email"] == data["email"] for user in users):
+            return jsonify({"message": "User already exists"}), 400
 
-    return jsonify({"message": "User registered successfully!"})
+        new_user = {"name": data["name"], "email": data["email"], "votes": []}
+        users.append(new_user)
+        save_json(USERS_FILE, users)
+
+        return jsonify({"message": "User registered successfully!"}), 201
+    except Exception as e:
+        print("Error during signup:", e)
+        return jsonify({"error": "Internal server error"}), 500
+
 @app.route("/health", methods=["GET"])
 def health_check():
     return "OK", 200
@@ -60,63 +69,85 @@ def health_check():
 # Admin upload a video
 @app.route("/admin/upload", methods=["POST"])
 def admin_upload():
-    data = request.json
-    print("Received video upload data:", data)
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "Request must be JSON"}), 400
 
-    videos = load_json(VIDEOS_FILE)
-    new_video = {
-        "id": len(videos) + 1,
-        "title": data["title"],
-        "url": data["url"]
-    }
-    videos.append(new_video)
-    save_json(VIDEOS_FILE, videos)
+        print("Received video upload data:", data)
 
-    return jsonify({"message": "Video uploaded successfully!"})
+        videos = load_json(VIDEOS_FILE)
+        new_video = {
+            "id": len(videos) + 1,
+            "title": data["title"],
+            "url": data["url"]
+        }
+        videos.append(new_video)
+        save_json(VIDEOS_FILE, videos)
+
+        return jsonify({"message": "Video uploaded successfully!"}), 201
+    except Exception as e:
+        print("Error during video upload:", e)
+        return jsonify({"error": "Internal server error"}), 500
 
 # Get all videos
 @app.route("/videos", methods=["GET"])
 def get_videos():
-    videos = load_json(VIDEOS_FILE)
-    return jsonify(videos)
+    try:
+        videos = load_json(VIDEOS_FILE)
+        return jsonify(videos), 200
+    except Exception as e:
+        print("Error fetching videos:", e)
+        return jsonify({"error": "Internal server error"}), 500
 
 # Record a vote
 @app.route("/vote", methods=["POST"])
 def vote():
-    data = request.json
-    print("Received vote data:", data)
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "Request must be JSON"}), 400
 
-    votes = load_json(VOTES_FILE)
-    votes.append(data)
-    save_json(VOTES_FILE, votes)
+        print("Received vote data:", data)
 
-    return jsonify({"message": "Vote recorded successfully!"})
+        votes = load_json(VOTES_FILE)
+        votes.append(data)
+        save_json(VOTES_FILE, votes)
+
+        return jsonify({"message": "Vote recorded successfully!"}), 201
+    except Exception as e:
+        print("Error during voting:", e)
+        return jsonify({"error": "Internal server error"}), 500
 
 # Admin report for voting results
 @app.route("/admin/report", methods=["GET"])
 def admin_report():
-    votes = load_json(VOTES_FILE)
-    video_preferences = {}
+    try:
+        votes = load_json(VOTES_FILE)
+        video_preferences = {}
 
-    for vote in votes:
-        pair_key = f"{vote['video1_id']}-{vote['video2_id']}"
-        if pair_key not in video_preferences:
-            video_preferences[pair_key] = {
-                "video1_id": vote["video1_id"],
-                "video2_id": vote["video2_id"],
-                "video1_votes": 0,
-                "video2_votes": 0,
-                "total_votes": 0,
-            }
+        for vote in votes:
+            pair_key = f"{vote['video1_id']}-{vote['video2_id']}"
+            if pair_key not in video_preferences:
+                video_preferences[pair_key] = {
+                    "video1_id": vote["video1_id"],
+                    "video2_id": vote["video2_id"],
+                    "video1_votes": 0,
+                    "video2_votes": 0,
+                    "total_votes": 0,
+                }
 
-        if vote["preferred_video_id"] == vote["video1_id"]:
-            video_preferences[pair_key]["video1_votes"] += 1
-        elif vote["preferred_video_id"] == vote["video2_id"]:
-            video_preferences[pair_key]["video2_votes"] += 1
+            if vote["preferred_video_id"] == vote["video1_id"]:
+                video_preferences[pair_key]["video1_votes"] += 1
+            elif vote["preferred_video_id"] == vote["video2_id"]:
+                video_preferences[pair_key]["video2_votes"] += 1
 
-        video_preferences[pair_key]["total_votes"] += 1
+            video_preferences[pair_key]["total_votes"] += 1
 
-    return jsonify({"aggregated": video_preferences})
+        return jsonify({"aggregated": video_preferences}), 200
+    except Exception as e:
+        print("Error generating report:", e)
+        return jsonify({"error": "Internal server error"}), 500
 
 # Run the app
 if __name__ == "__main__":
