@@ -2,6 +2,7 @@
   "name": "frontend",
   "version": "1.0.0",
   "private": true,
+  "proxy" : "https://localhost:5000",
   "main": "index.js",
   "homepage": "./",
   "repository": "https://github.com/tobilicous/Slurm-feedback.git",
