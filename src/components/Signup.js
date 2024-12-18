@@ -12,7 +12,7 @@ const Signup = () => {
       return;
     }
 
-    fetch("/signup", {
+    fetch("http://localhost:5001/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formData),
