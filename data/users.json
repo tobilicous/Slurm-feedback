@@ -15,5 +15,15 @@
         "name": "John Doe",
         "email": "john@example.com",
         "votes": []
+    },
+    {
+        "name": "tobi",
+        "email": "a",
+        "votes": []
+    },
+    {
+        "name": "tobi",
+        "email": "adesanya",
+        "votes": []
     }
 ]
