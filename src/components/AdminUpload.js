@@ -6,23 +6,17 @@ const AdminUpload = () => {
   const [message, setMessage] = useState("");
 
   const handleUpload = () => {
-    // Validate fields before sending the request
     if (!formData.title.trim() || !formData.url.trim()) {
       setMessage("Both fields are required.");
       return;
     }
 
-    fetch("/admin/upload", {
+    fetch("http://localhost:5001/admin/upload", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formData),
     })
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error("Failed to upload video.");
-        }
-        return res.json();
-      })
+      .then((res) => res.json())
       .then((data) => {
         if (data.message === "Video uploaded successfully!") {
           setMessage("Video uploaded successfully!");
@@ -71,4 +65,3 @@ const AdminUpload = () => {
 };
 
 export default AdminUpload;
-

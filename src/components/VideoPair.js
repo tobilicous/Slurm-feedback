@@ -7,7 +7,7 @@ const VideoPair = () => {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    fetch("http://127.0.0.1:5000/videos")
+    fetch("http://localhost:5001/videos")
       .then((res) => res.json())
       .then((data) => setVideos(data))
       .catch((error) => console.error("Error fetching videos:", error));
@@ -26,7 +26,7 @@ const VideoPair = () => {
       preferred_video_id: preferredVideoId,
     };
 
-    fetch("http://127.0.0.1:5000/vote", {
+    fetch("http://localhost:5001/vote", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(voteData),
@@ -79,4 +79,3 @@ const VideoPair = () => {
 };
 
 export default VideoPair;
-

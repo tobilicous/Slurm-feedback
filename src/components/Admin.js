@@ -5,7 +5,7 @@ const Admin = () => {
   const [report, setReport] = useState([]);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:5000/admin/report")
+    fetch("http://localhost:5001/admin/report")
       .then((res) => res.json())
       .then((data) => setReport(data.aggregated || []))
       .catch((error) => console.error("Error fetching report:", error));
