@@ -24,6 +24,14 @@ def save_json(file_path, data):
     with open(file_path, "w") as f:
         json.dump(data, f, indent=4)
 
+
+@app.route("/", defaults={"path": ""})
+@app.route("/<path:path>")
+def serve_react_app(path):
+    if os.path.exists(f"./build/{path}"):
+        return send_from_directory("./build", path)
+    return send_from_directory("./build", "index.html")
+
 # Default route
 @app.route("/", methods=["GET"])
 def home():
